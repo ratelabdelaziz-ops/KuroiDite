@@ -283,6 +283,27 @@ h1 {
 .stack-text {color:var(--muted); font-size:15px; line-height:1.65}
 
 .work-card {padding:0; overflow:hidden}
+.hire-cta {
+  margin-top:22px; padding:22px 24px; border-radius:18px;
+  border:1px solid var(--line-strong);
+  background:linear-gradient(135deg, rgba(40,30,16,.7), rgba(20,14,8,.85));
+  display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;
+}
+.hire-cta-text h3 {margin:0 0 6px; font-size:21px; color:var(--text)}
+.hire-cta-text p {margin:0; color:var(--muted); font-size:15px; max-width:440px}
+.hire-btn {
+  flex:none; padding:13px 22px; border-radius:12px; cursor:pointer; white-space:nowrap;
+  font-weight:600; font-size:15px; text-decoration:none;
+  color:#1b140b; background:linear-gradient(180deg,#ffe7a0,#d9a23a);
+  border:1px solid rgba(255,233,165,.6);
+  box-shadow:0 8px 24px rgba(255,203,94,.18);
+  transition:transform .15s ease, box-shadow .2s ease, filter .15s ease;
+}
+.hire-btn:hover {transform:translateY(-2px); filter:brightness(1.06); box-shadow:0 12px 30px rgba(255,203,94,.28)}
+@media (max-width:600px){
+  .hire-cta{flex-direction:column; align-items:flex-start}
+  .hire-btn{width:100%; text-align:center}
+}
 .thumb {
   height:180px; border-bottom:1px solid rgba(255,203,94,.12); position:relative;
   background:linear-gradient(180deg, rgba(15,11,7,.95), rgba(22,16,9,.98)); overflow:hidden;
@@ -1188,6 +1209,34 @@ body.vibe-slate{
 }
 
 </style>
+<style id="proModeStyles">
+/* ===== PROFESSIONAL MODE — clean, client-facing first impression ===== */
+.mode-btn{display:inline-flex; align-items:center; gap:6px}
+.mode-btn span:first-child{font-size:13px}
+body.pro-mode .mode-btn{
+  color:#1b140b; background:linear-gradient(180deg,#ffe7a0,#d9a23a);
+  border-color:rgba(255,233,165,.6); box-shadow:0 0 20px rgba(255,203,94,.18);
+}
+/* hide the interactive/playful layers in pro mode */
+body.pro-mode .guide-layer,
+body.pro-mode .jukebox-wrap,
+body.pro-mode .jb-handle,
+body.pro-mode .music-btn,
+body.pro-mode .adapt-wheel,
+body.pro-mode .adapt-hint,
+body.pro-mode .scene-card,
+body.pro-mode .scene,
+body.pro-mode #kbdHint,
+body.pro-mode .note-pop,
+body.pro-mode .puff { display:none !important; }
+/* give content the extra breathing room once the guide layer is gone */
+body.pro-mode .workspace{ padding-bottom:40px; }
+/* a small, tasteful note that fun mode exists */
+.mode-note{
+  display:none; text-align:center; margin:8px auto 0; font-size:12px; color:var(--muted); opacity:.7;
+}
+body.pro-mode .mode-note{ display:block; }
+</style>
 </head>
 <body>
 <div class="intro" id="intro">
@@ -1274,6 +1323,7 @@ body.vibe-slate{
       <button class="nav-btn" role="tab" aria-selected="false" data-tab="contact">Contact</button>
     </nav>
     <div class="top-actions">
+      <button class="action-btn mode-btn" id="modeToggle" title="Switch between a clean professional view and the interactive view"><span id="modeIcon">✦</span> <span id="modeLabel">Pro view</span></button>
       <button class="action-btn music-btn" id="musicToggle" aria-pressed="false" title="Toggle background music"><span class="music-ico">♪</span><span id="musicLabel">music</span></button>
       <button class="action-btn share-btn" id="shareBtn" title="share this portfolio"><span>⤤</span> Share</button>
       <a class="action-btn primary" href="mailto:kuroidite@gmail.com?subject=Hey%20Kuroi">Gmail</a>
@@ -1461,46 +1511,54 @@ body.vibe-slate{
     </section>
 
     <section class="page" id="work">
-      <h2 class="section-title">work</h2>
-      <p class="section-copy">Some of the stuff I usually end up building.</p>
+      <h2 class="section-title">services</h2>
+      <p class="section-copy">What I can build for you. Every project is scoped clearly up front — you'll know what you're getting, the timeline, and the price before any work starts.</p>
       <div class="work-grid">
         <article class="card work-card guide-tour-stop" data-guide-text="Python tools are where I make boring stuff fast and easy.">
           <div class="thumb python"></div>
           <div class="work-body">
-            <div class="meta"><span class="pill">Python</span><span class="pill">Tools</span></div>
-            <h3>utility tools</h3>
-            <p>small tools that save time, automate boring steps, and make a workflow feel easier.</p>
+            <div class="meta"><span class="pill">Python</span><span class="pill">Automation</span></div>
+            <h3>Tools &amp; automation</h3>
+            <p>Scripts and small apps that automate repetitive work — data processing, file handling, bots, and workflow helpers. Delivered ready to run, with clear instructions.</p>
           </div>
         </article>
         <article class="card work-card guide-tour-stop" data-guide-text="LuaU is for game systems that feel smooth instead of scuffed.">
           <div class="thumb luau"></div>
           <div class="work-body">
-            <div class="meta"><span class="pill">LuaU</span><span class="pill">Systems</span></div>
-            <h3>game systems</h3>
-            <p>custom mechanics, scripted features, and logic that feels smooth instead of messy.</p>
+            <div class="meta"><span class="pill">LuaU</span><span class="pill">Roblox</span></div>
+            <h3>Game systems &amp; scripting</h3>
+            <p>Custom mechanics, gameplay logic, and scripted features built to run smoothly and stay maintainable. Commented code so you (or your team) can build on it.</p>
           </div>
         </article>
         <article class="card work-card guide-tour-stop" data-guide-text="Clean interfaces make everything feel sharper right away.">
           <div class="thumb web"></div>
           <div class="work-body">
-            <div class="meta"><span class="pill">HTML</span><span class="pill">CSS</span></div>
-            <h3>clean interfaces</h3>
-            <p>good looking pages with better spacing, clearer flow, and a sharper overall feel.</p>
+            <div class="meta"><span class="pill">HTML</span><span class="pill">CSS</span><span class="pill">JS</span></div>
+            <h3>Websites &amp; interfaces</h3>
+            <p>Landing pages, portfolios, and front-end UI with clean layout, responsive design, and polish that works on phone and desktop. This site is an example.</p>
           </div>
         </article>
         <article class="card work-card guide-tour-stop" data-guide-text="Java and C++ cover the logic heavy side when things need more structure.">
           <div class="thumb logic"></div>
           <div class="work-body">
             <div class="meta"><span class="pill">Java</span><span class="pill">C++</span></div>
-            <h3>logic heavy work</h3>
-            <p>projects that need stronger structure, control, and code that stays readable as it grows.</p>
+            <h3>Logic &amp; backend work</h3>
+            <p>Heavier systems that need real structure — program logic, data handling, and code cleanup that keeps a growing project readable instead of a mess.</p>
           </div>
         </article>
       </div>
-    
+
+      <div class="hire-cta">
+        <div class="hire-cta-text">
+          <h3>Got a project in mind?</h3>
+          <p>Tell me what you need and I'll give you an honest scope and quote — no pressure, no upselling.</p>
+        </div>
+        <a class="hire-btn" href="mailto:kuroidite@gmail.com?subject=Project%20inquiry&amp;body=Hi%20Kuroi%2C%20here%27s%20what%20I%27m%20looking%20to%20build%3A">Start a project →</a>
+      </div>
+
       <div class="scene-card">
         <div class="sc-guy has-sprite"></div>
-        <div class="sc-text"><span style="font-size:20px">📦</span><br>every project gets the same treatment: make it smooth, make it clean, ship it. he supervises.</div>
+        <div class="sc-text"><span style="font-size:20px">📦</span><br>every project gets the same treatment: scope it clearly, build it clean, ship it on time.</div>
       </div>
     </section>
 
@@ -2573,6 +2631,35 @@ body.vibe-slate{
   document.getElementById('copyDiscordTop')?.addEventListener('click', () => copyText(discord, 'discord'));
   document.getElementById('copyDiscordMain')?.addEventListener('click', () => copyText(discord, 'discord'));
   document.getElementById('musicToggle')?.addEventListener('click', toggleMusic);
+
+  // ===== PRO / FUN MODE =====
+  // Default to the full interactive view (lil guy + fun stuff visible).
+  // The toggle lets anyone switch to a clean "pro" view on demand.
+  // (No localStorage in artifacts — we just default to fun each load.)
+  let proMode = false;
+  function setMode(pro) {
+    proMode = pro;
+    document.body.classList.toggle('pro-mode', pro);
+    const icon = document.getElementById('modeIcon');
+    const label = document.getElementById('modeLabel');
+    if (pro) {
+      // now in clean/pro view — button offers to bring the fun back
+      if (label) label.textContent = 'Fun mode';
+      if (icon) icon.textContent = '☺';
+      try { if (music.on) stopMusic(); } catch (e) {}
+    } else {
+      // now in fun view — button offers the clean pro view
+      if (label) label.textContent = 'Pro view';
+      if (icon) icon.textContent = '✦';
+      try { say(pick(['the lil guy is here', 'interactive mode', 'lets have some fun'])  , { force: true, cooldown: 1500 }); } catch (e) {}
+    }
+  }
+  document.getElementById('modeToggle')?.addEventListener('click', () => {
+    try { playClick(); } catch (e) {}
+    setMode(!proMode);
+  });
+  // apply default at startup (fun mode — lil guy visible)
+  setMode(false);
   document.getElementById('shareBtn')?.addEventListener('click', async () => {
     playClick();
     const url = window.location.href;
