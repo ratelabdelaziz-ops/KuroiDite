@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Kuroi · General Developer</title>
 <meta name="theme-color" content="#0d0a06">
-<meta name="description" content="Kuroi — general developer building clean sites, tools, bots, and game systems in Python, Java, C++, LuaU, HTML, and CSS.">
+<meta name="description" content="Kuroi, a general developer building clean sites, tools, bots, and game systems in Python, Java, C++, LuaU, HTML, and CSS.">
 <meta name="author" content="Kuroi">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Kuroi · General Developer">
@@ -136,14 +136,21 @@ body::after {
 .workspace {position:relative; min-height:0; overflow:hidden}
 .page {
   position:absolute; inset:0;
-  opacity:0; visibility:hidden; transform:translateY(14px) scale(.99);
-  transition:opacity .28s ease, transform .28s ease, visibility .28s ease;
+  opacity:0; visibility:hidden; transform:translateY(16px) scale(.992);
+  transition:opacity .34s cubic-bezier(.22,.61,.36,1), transform .34s cubic-bezier(.22,.61,.36,1), visibility .34s;
   overflow:auto; padding:34px 32px 140px;
   scrollbar-width:thin; scrollbar-color:rgba(255,203,94,.34) transparent;
 }
 .page::-webkit-scrollbar {width:8px}
 .page::-webkit-scrollbar-thumb {background:rgba(255,203,94,.34); border-radius:999px}
 .page.active {opacity:1; visibility:visible; transform:none}
+/* gentle staggered rise of the main blocks when a tab opens */
+.page.active > *{animation:contentRise .5s cubic-bezier(.22,.61,.36,1) both}
+.page.active > *:nth-child(2){animation-delay:.05s}
+.page.active > *:nth-child(3){animation-delay:.1s}
+.page.active > *:nth-child(4){animation-delay:.15s}
+.page.active > *:nth-child(5){animation-delay:.2s}
+@keyframes contentRise{from{opacity:0; transform:translateY(12px)} to{opacity:1; transform:translateY(0)}}
 
 .workspace-lantern {
   position:absolute; width:34px; height:46px; z-index:6; pointer-events:none;
@@ -1229,6 +1236,16 @@ body.pro-mode .workspace{ padding-bottom:40px; }
   display:none; text-align:center; margin:8px auto 0; font-size:12px; color:var(--muted); opacity:.7;
 }
 body.pro-mode .mode-note{ display:block; }
+
+/* accessibility: clear keyboard-focus ring everywhere (mouse clicks stay clean) */
+a:focus-visible, button:focus-visible, summary:focus-visible,
+[tabindex]:focus-visible, input:focus-visible, select:focus-visible {
+  outline:2px solid var(--gold, #ffcb5e) !important;
+  outline-offset:2px;
+  border-radius:8px;
+}
+/* never trap focus invisibly */
+:focus:not(:focus-visible){ outline:none; }
 </style>
 </head>
 <body>
@@ -2037,12 +2054,28 @@ body.pro-mode .mode-note{ display:block; }
 
   async function copyText(value, label) {
     markAction();
+    let ok = false;
     try {
-      await navigator.clipboard.writeText(value);
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(value);
+        ok = true;
+      } else {
+        // fallback for non-HTTPS / older browsers
+        const ta = document.createElement('textarea');
+        ta.value = value;
+        ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+        document.body.appendChild(ta);
+        ta.focus(); ta.select();
+        ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+    } catch (e) { ok = false; }
+    if (ok) {
       showToast(label + ' copied');
       say('copied ' + label + ' for you', { force: true, cooldown: 1200 });
-    } catch (e) {
+    } else {
       showToast(value);
+      say('couldnt auto-copy, here it is: ' + value, { force: true, cooldown: 1200 });
     }
   }
 
@@ -2448,38 +2481,38 @@ body.pro-mode .mode-note{ display:block; }
   function contextualLine(tab) {
     const common = {
       home: [
-        "this is kuroi — general dev, builds a bit of everything",
+        "this is kuroi, general dev, builds a bit of everything",
         "landing page. clean, no clutter, straight to it",
         "the gold lantern thing? that's the whole vibe",
         "scroll around, i'll tag along"
       ],
       about: [
         "here's the deal: he's not locked to one lane",
-        "front end, logic, tools, cleanup — he does the lot",
+        "front end, logic, tools, cleanup, he does the lot",
         "no fluff. just what he actually builds",
         "this part's about earning your trust, honestly"
       ],
       stack: [
-        "the toolkit — python, java, c++, luau, html, css",
+        "the toolkit: python, java, c++, luau, html, css",
         "bars show comfort level, not bragging rights",
         "tools change per job, this is the core set",
         "psst… the wheel down there is worth a click"
       ],
       work: [
-        "this is the flex zone — the projects carry",
+        "this is the flex zone, the projects carry",
         "everything here got the same care: smooth, clean, shipped",
         "hover the cards, i'll walk you through em",
         "this tab's where people decide to hire him"
       ],
       contact: [
         "wanna reach him? everything's one click here",
-        "gmail, x, discord — pick your poison",
+        "gmail, x, discord, pick your poison",
         "copy the discord, slide in, say hi",
         "he actually replies, fyi"
       ]
     };
     const arr = (common[tab] || ['pretty cool tab']).slice();
-    if (state.actions > 12 && tab === 'work') arr.push("you've been clicking around — this is the good stuff");
+    if (state.actions > 12 && tab === 'work') arr.push("you've been clicking around, this is the good stuff");
     if (state.visits[tab] > 2) arr.push("back again? good, there's more to see");
     return arr[Math.floor(Math.random() * arr.length)];
   }
@@ -2689,19 +2722,17 @@ body.pro-mode .mode-note{ display:block; }
       if (navigator.share) {
         await navigator.share(shareData);
         say('thanks for sharing!', { force: true, cooldown: 1500 });
-      } else {
-        await navigator.clipboard.writeText(url);
-        showToast('link copied');
-        say('link copied, go spread the word', { force: true, cooldown: 1500 });
+        return;
       }
     } catch (e) {
-      // user cancelled the share sheet or clipboard blocked — stay quiet/graceful
-      try { await navigator.clipboard.writeText(url); showToast('link copied'); } catch (e2) {}
+      // user cancelled the share sheet — fall through to copy
     }
+    // no share API or it was dismissed: copy the link robustly
+    copyText(url, 'link');
   });
   document.getElementById('jbHandle')?.addEventListener('click', () => { playClick(); toggleMusic(); });
 
-  // the adaptability wheel — the Mahoraga trigger
+  // the adaptability wheel (vibe swapper)
   const aw = document.getElementById('adaptWheel');
   aw?.addEventListener('click', () => { playClick(); spinWheelVibe(); });
   aw?.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); spinWheelVibe(); } });
@@ -2988,7 +3019,7 @@ body.pro-mode .mode-note{ display:block; }
       'tip: poke the lil guy. a lot.',
       'tip: drag him around the workspace',
       'tip: open the jukebox, drop a disc',
-      'tip: press 1–5 to jump between tabs',
+      'tip: press 1 to 5 to jump between tabs',
       'tip: leave him alone and he gets bored',
       'loading good vibes...'
     ];
@@ -3131,9 +3162,7 @@ body.pro-mode .mode-note{ display:block; }
         : 'evening, welcome in';
       moveGuide(0.06, 'left');
       animateGuide('peek', 1200, { emote: '👋', say: greet, cooldown: 1500, allowBusy: true });
-      queueTour(() => say('im alive in here, poke me or play a disc', { force: true, cooldown: 1800 }), 1700);
-      queueTour(() => toggleJukeboxPanel(true), 3300);
-      queueTour(() => say(pick(['thats the jukebox, 8 discs', 'pick a vibe whenever', 'discs are down there']), { force: true, cooldown: 1600, dim: true }), 4100);
+      queueTour(() => say('im alive in here, poke me or open the jukebox whenever', { force: true, cooldown: 1800 }), 1700);
     }, 700);
   }
   // main init continues into the revamp below (same IIFE scope)
