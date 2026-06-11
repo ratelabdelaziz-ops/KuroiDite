@@ -121,6 +121,10 @@ body::after {
 }
 .top-actions{display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap}
 .music-btn{display:inline-flex; align-items:center; gap:7px}
+.music-btn.panel-open{
+  border-color:rgba(255,233,165,.5);
+  box-shadow:0 0 22px rgba(255,203,94,.18), inset 0 0 12px rgba(255,203,94,.08);
+}
 .share-btn{display:inline-flex; align-items:center; gap:6px}
 .share-btn span{font-size:14px}
 .music-ico{display:inline-block; font-size:13px; transition:transform .2s ease}
@@ -3038,6 +3042,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible,
     if (logEl) {
       bootLines.forEach((line, i) => {
         setTimeout(() => {
+          if (state.introDone) return; // intro already finished/skipped
           const row = document.createElement('div');
           row.innerHTML = '<span class="pend">› ' + line + '...</span>';
           logEl.appendChild(row);
@@ -3058,7 +3063,8 @@ a:focus-visible, button:focus-visible, summary:focus-visible,
       introGuide._notes = setInterval(() => {
         const n = document.createElement('span');
         n.textContent = Math.random() < 0.5 ? '♪' : '♫';
-        n.style.cssText = 'position:absolute;left:50%;bottom:70px;color:#ffe08b;font-size:16px;pointer-events:none;text-shadow:0 0 10px rgba(255,224,139,.6);';
+        // spawn just above the dancing guy's head (he sits at bottom:18%)
+        n.style.cssText = 'position:absolute;left:50%;bottom:calc(18% + 64px);color:#ffe08b;font-size:16px;pointer-events:none;text-shadow:0 0 10px rgba(255,224,139,.6);';
         n.style.setProperty('--nx', (Math.random() * 40 - 20) + 'px');
         n.style.setProperty('--nr', (Math.random() * 40 - 20) + 'deg');
         n.style.animation = 'noteFloat 1.4s ease-out forwards';
